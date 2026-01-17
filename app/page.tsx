@@ -1,50 +1,45 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { client } from "@/lib/sanity";
 import ProductCard from "@/components/ProductCard";
+import { Product } from "@/types";
+import Link from "next/link";
 
-async function getProducts() {
+// Fetch optimizado
+async function getProducts(): Promise<Product[]> {
   return await client.fetch(`
-    *[_type == "product"] | order(_createdAt desc){
+    *[_type == "product"] | order(_createdAt desc)[0...6]{
       _id,
       title,
       price,
       slug,
       image
     }
-  `);
+  `, {}, { next: { revalidate: 3600 } });
 }
 
-export default function Home() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    getProducts().then(setProducts);
-  }, []);
+export default async function Home() {
+  const products = await getProducts();
 
   return (
-    <main className={`${dark ? "bg-black text-white" : "bg-white text-black"} min-h-screen transition-colors duration-500`}>
-
-      {/* HEADER */}
-      <header className="flex items-center justify-between px-8 py-10">
-        <h1 className="text-3xl uppercase tracking-widest font-light">
-          ROOY
+    <main className="flex-1">
+      {/* HERO SECTION SIMPLE */}
+      <section className="px-6 py-12 md:py-20 text-center border-b border-neutral-200 dark:border-neutral-800">
+        <h1 className="text-4xl md:text-6xl font-black uppercase tracking-widest mb-4">
+          Nueva Colección
         </h1>
-
-        {/* TOGGLE */}
-        <button
-          onClick={() => setDark(!dark)}
-          className="border px-6 py-2 uppercase tracking-widest text-sm hover:opacity-70 transition"
+        <p className="text-neutral-500 uppercase tracking-widest text-sm mb-8">
+          Streetwear / Gothic / Minimal
+        </p>
+        <Link 
+          href="/catalogo" 
+          className="inline-block bg-black text-white dark:bg-white dark:text-black px-10 py-4 uppercase tracking-[0.2em] font-bold text-sm hover:opacity-80 transition"
         >
-          {dark ? "Modo Blanco" : "Modo Negro"}
-        </button>
-      </header>
+          Ver Todo
+        </Link>
+      </section>
 
-      {/* GRID */}
-      <section className="max-w-7xl mx-auto px-8 pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+      {/* PRODUCT GRID */}
+      <section className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-12">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}

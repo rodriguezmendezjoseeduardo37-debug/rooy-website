@@ -1,44 +1,38 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { CartProvider } from "@/context/CartContext";
+
+// IMPORTANTE: Importar SIN llaves (porque es default export)
+import AuthProvider from "@/context/AuthProvider"; 
+
 import Navbar from "@/components/Navbar";
+import CartSidebar from "@/components/CartSidebar";
 import WhatsappButton from "@/components/WhatsappButton";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "ROOY | Chamarras Premium",
-  description:
-    "Chamarras premium fabricadas en Puebla. Diseño, calidad y estilo ROOY.",
+export const metadata = {
+  title: "ROOY | Streetwear",
+  description: "Tienda oficial ROOY",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-black`}
-      >
-        {/* NAVBAR */}
-        <Navbar />
-
-        {/* CONTENIDO */}
-        {children}
-  <WhatsappButton />
-
-
+      <body>
+        {/* El AuthProvider envuelve todo */}
+        <AuthProvider>
+          <ThemeProvider>
+            <CartProvider>
+              <Navbar />
+              <CartSidebar />
+              {children}
+              <WhatsappButton />
+            </CartProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
