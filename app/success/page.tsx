@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useSearchParams } from "next/navigation";
+export const dynamic = "force-dynamic";
 
 export default function SuccessPage() {
   // IMPORTANTE: Traemos también 'cart' para verificar si tiene items
