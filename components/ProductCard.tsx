@@ -30,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </button>
 
-        <Link href={`/producto/${product.slug.current}`} className="block">
+       <Link href={`/producto/${product.slug.current}`} className="block">
           <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 dark:bg-neutral-900 mb-4 border border-neutral-200 dark:border-neutral-800">
             {product.image && (
               <Image

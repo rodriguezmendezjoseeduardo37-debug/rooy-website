@@ -1,79 +1,108 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { Product } from "@/types";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { CartItem, Product } from "@/types";
 
-export interface CartItem extends Product {
-  quantity: number;
-  size?: string; // Opcional: si quieres manejar tallas
-}
-
-type CartContextType = {
+interface CartContextType {
   cart: CartItem[];
-  isOpen: boolean;
+  addToCart: (product: CartItem | Product, openSidebar?: boolean) => void;
+  removeFromCart: (id: string, size?: string) => void;
+  clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
-  addToCart: (product: Product, size?: string) => void;
-  removeFromCart: (id: string) => void;
+  isCartOpen: boolean;
   total: number;
-};
+}
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Cargar carrito del localStorage al iniciar
+  // Cargar del localStorage
   useEffect(() => {
+    const storedCart = localStorage.getItem("rooy_cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
     setMounted(true);
-    const savedCart = localStorage.getItem("rooy_cart");
-    if (savedCart) setCart(JSON.parse(savedCart));
   }, []);
 
-  // Guardar en localStorage cada vez que cambia
+  // Guardar en localStorage
   useEffect(() => {
     if (mounted) {
       localStorage.setItem("rooy_cart", JSON.stringify(cart));
     }
   }, [cart, mounted]);
 
-  const openCart = () => setIsOpen(true);
-  const closeCart = () => setIsOpen(false);
+  // --- LÓGICA CORREGIDA PARA SEPARAR TALLAS ---
+  const addToCart = (product: CartItem | Product, openSidebar = true) => {
+    setCart((prevCart) => {
+      // 1. Obtenemos la talla que el usuario quiere agregar.
+      // Si el componente no envió talla, asumimos "Unitalla".
+      const incomingSize = (product as CartItem).size || "Unitalla";
+      const incomingQty = (product as CartItem).quantity || 1;
 
-  const addToCart = (product: Product, size = "M") => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item._id === product._id && item.size === size);
-      if (existing) {
-        return prev.map((item) =>
-          item._id === product._id && item.size === size
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+      // 2. Buscamos si YA existe un producto con EL MISMO ID **Y** LA MISMA TALLA.
+      const existingItemIndex = prevCart.findIndex(
+        (item) => item._id === product._id && (item.size || "Unitalla") === incomingSize
+      );
+
+      // ESCENARIO A: Ya existe esa combinación exacta (ID + Talla) -> Sumamos cantidad
+      if (existingItemIndex > -1) {
+        const newCart = [...prevCart];
+        newCart[existingItemIndex].quantity += incomingQty;
+        return newCart;
+      } 
+      
+      // ESCENARIO B: Es una talla nueva o producto nuevo -> Agregamos como item separado
+      else {
+        const newItem: CartItem = { 
+            ...product, 
+            quantity: incomingQty,
+            size: incomingSize 
+        };
+        return [...prevCart, newItem];
       }
-      return [...prev, { ...product, quantity: 1, size }];
     });
-    setIsOpen(true); // Abrir carrito al agregar
+
+    if (openSidebar) {
+      setIsCartOpen(true);
+    }
   };
 
-  const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((item) => item._id !== id));
+  const removeFromCart = (id: string, size?: string) => {
+    const targetSize = size || "Unitalla";
+    setCart((prevCart) => 
+      prevCart.filter((item) => {
+        // Solo eliminamos si COINCIDE el ID y COINCIDE la Talla
+        if (item._id === id && (item.size || "Unitalla") === targetSize) {
+            return false; // Adiós
+        }
+        return true; // Se queda
+      })
+    );
   };
+  
+  const clearCart = () => setCart([]);
+  const openCart = () => setIsCartOpen(true);
+  const closeCart = () => setIsCartOpen(false);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <CartContext.Provider
-      value={{ cart, isOpen, openCart, closeCart, addToCart, removeFromCart, total }}
+      value={{ cart, addToCart, removeFromCart, clearCart, openCart, closeCart, isCartOpen, total }}
     >
       {children}
     </CartContext.Provider>
   );
-}
+};
 
-export function useCart() {
+export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) throw new Error("useCart debe usarse dentro de CartProvider");
+  if (!context) throw new Error("useCart debe usarse dentro de un CartProvider");
   return context;
-}
+};

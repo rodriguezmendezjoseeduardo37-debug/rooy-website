@@ -5,6 +5,10 @@ import { Product } from "@/types";
 import { Metadata } from "next";
 import AddToCartButton from "@/components/AddToCartButton";
 
+// IMPORTAMOS EL ZOOM Y SUS ESTILOS
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
+
 // --- METADATA ---
 export async function generateMetadata({
   params,
@@ -55,17 +59,21 @@ export default async function Page({
     <section className="max-w-7xl mx-auto px-6 py-16">
       <div className="grid md:grid-cols-2 gap-16 items-start">
         
-        {/* GALERÍA DE IMÁGENES */}
+        {/* GALERÍA DE IMÁGENES CON ZOOM */}
         <div className="space-y-6">
           {images.map((img, i) => (
-            <div key={i} className="relative aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
-              <Image
-                src={urlFor(img).width(900).height(1125).url()}
-                alt={`${product.title} ${i + 1}`}
-                fill
-                className="object-cover"
-                priority={i === 0}
-              />
+            <div key={i} className="relative aspect-[4/5] bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 cursor-zoom-in">
+              {/* ENVOLVEMOS LA IMAGEN CON ZOOM */}
+              <Zoom>
+                <Image
+                  src={urlFor(img).width(900).height(1125).url()}
+                  alt={`${product.title} ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={i === 0}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </Zoom>
             </div>
           ))}
         </div>
@@ -84,16 +92,10 @@ export default async function Page({
             {product.description}
           </div>
 
-          <a
-            href={`https://wa.me/522228732164?text=Hola,%20me%20interesa%20el%20producto%20${product.title}`}
-            target="_blank"
-            className="block w-full text-center bg-black dark:bg-white text-white dark:text-black py-4 uppercase tracking-[0.2em] font-bold text-sm hover:opacity-80 transition"
-          >
-            <div className="mt-8">
-    <AddToCartButton product={product} />
-</div>
-            Comprar ahora
-          </a>
+          {/* BOTÓN DE CARRITO (CLIENT COMPONENT) */}
+          <div className="mt-8">
+             <AddToCartButton product={product} />
+          </div>
         </div>
       </div>
     </section>
