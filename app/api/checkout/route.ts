@@ -40,13 +40,16 @@ export async function POST(req: Request) {
     });
 
     // --- SECCIÓN CORREGIDA ---
-   const stripeSession = await stripe.checkout.sessions.create({
+  const stripeSession = await stripe.checkout.sessions.create({
   line_items: lineItems,
   mode: "payment",
+  /* ACTIVA LA RECOLECCIÓN DE DIRECCIÓN */
+  shipping_address_collection: {
+    allowed_countries: ['MX'], 
+  },
   success_url: `${process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
   cancel_url: `${process.env.NEXTAUTH_URL}/checkout`,
   customer_email: session.user.email!,
-  // ESTA ES LA PARTE QUE FALTA:
   metadata: {
     userId: (session.user as any).id || "", 
     cartItems: JSON.stringify(
