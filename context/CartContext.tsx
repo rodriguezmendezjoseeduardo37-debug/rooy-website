@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { CartItem, Product } from "@/types";
+import { useCallback } from "react";
 
 interface CartContextType {
   cart: CartItem[];
@@ -86,7 +87,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
   
-  const clearCart = () => setCart([]);
+ const clearCart = useCallback(() => {
+  setCart([]);
+}, []);
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 

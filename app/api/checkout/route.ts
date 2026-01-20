@@ -25,20 +25,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Carrito vacío" }, { status: 400 });
     }
 
-    // Transformamos los productos
     const lineItems = cart.map((item: any) => {
       return {
         price_data: {
           currency: "mxn",
           product_data: {
             name: item.title,
-            // CORRECCIÓN IMPORTANTE:
-            // Enviamos array vacío en imágenes para evitar el error "Invalid String"
             images: [], 
-            metadata: {
-              id: item._id,
-              size: item.size || "Unitalla",
-            },
           },
           unit_amount: Math.round(item.price * 100),
         },
@@ -46,13 +39,26 @@ export async function POST(req: Request) {
       };
     });
 
-    const stripeSession = await stripe.checkout.sessions.create({
-      line_items: lineItems,
-      mode: "payment",
-      success_url: `${process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXTAUTH_URL}/checkout`,
-      customer_email: session.user.email!,
-    });
+    // --- SECCIÓN CORREGIDA ---
+   const stripeSession = await stripe.checkout.sessions.create({
+  line_items: lineItems,
+  mode: "payment",
+  success_url: `${process.env.NEXTAUTH_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${process.env.NEXTAUTH_URL}/checkout`,
+  customer_email: session.user.email!,
+  // ESTA ES LA PARTE QUE FALTA:
+  metadata: {
+    userId: (session.user as any).id || "", 
+    cartItems: JSON.stringify(
+      cart.map((item: any) => ({
+        title: item.title,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size || "Unitalla",
+      }))
+    ),
+  },
+});
 
     return NextResponse.json({ url: stripeSession.url });
 
