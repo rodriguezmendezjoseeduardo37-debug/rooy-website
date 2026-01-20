@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { client } from "@/sanity/lib/client";
 import Stripe from "stripe";
 import { Resend } from 'resend';
+export const dynamic = 'force-dynamic'; // Fuerza a que sea siempre dinámico
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover",

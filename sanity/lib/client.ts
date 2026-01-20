@@ -1,10 +1,10 @@
 import { createClient } from 'next-sanity'
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  // Usamos 'produccion' como default ya que es el que tienes en tus otras APIs
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'produccion', 
-  apiVersion: '2024-01-01', // Esta línea es obligatoria
+  // Usamos el ID que ya tienes en tus otros archivos
+  projectId: "4fzbmelx", 
+  dataset: "produccion",
+  apiVersion: '2024-01-01',
   useCdn: false, 
   token: process.env.SANITY_API_TOKEN, 
 })
