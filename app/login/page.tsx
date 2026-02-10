@@ -16,7 +16,7 @@ export default function LoginPage() {
         
         {/* LOGO */}
         <h1 className="text-3xl uppercase tracking-[0.4em] font-bold mb-2">
-          ROOY
+          Essor
         </h1>
         <p className="text-xs uppercase tracking-widest text-neutral-500 mb-12">
           Member Access
