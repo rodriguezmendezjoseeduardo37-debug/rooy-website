@@ -43,7 +43,7 @@ export default function Navbar() {
         
         {/* LOGO */}
         <Link href="/" className={`text-2xl tracking-[0.3em] font-bold uppercase hover:opacity-70 transition ${textColor}`}>
-          ROOY
+          Essor
         </Link>
 
         {/* BUSCADOR (Desktop) */}
