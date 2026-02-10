@@ -10,8 +10,8 @@ import WhatsappButton from "@/components/WhatsappButton";
 import 'react-medium-image-zoom/dist/styles.css'; 
 
 export const metadata = {
-  title: "ROOY | Streetwear",
-  description: "Tienda oficial ROOY",
+  title: "Essor | Streetwear",
+  description: "Tienda oficial Essor",
 };
 
 export default function RootLayout({
