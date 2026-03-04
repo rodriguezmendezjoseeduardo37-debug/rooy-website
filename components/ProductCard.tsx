@@ -30,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </button>
 
-       <Link href={`/producto/${product.slug.current}`} className="block">
+        <Link href={`/producto/${product.slug.current}`} className="block">
           <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100 dark:bg-neutral-900 mb-4 border border-neutral-200 dark:border-neutral-800">
             {product.image && (
               <Image
@@ -41,20 +41,20 @@ export default function ProductCard({ product }: { product: Product }) {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             )}
-            
+
             {/* Overlay "Ver Producto" (Estilo Streetwear) */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-               <span className="text-white uppercase tracking-widest text-xs font-bold border border-white px-4 py-2">
-                 Ver Pieza
-               </span>
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
+              <span className="text-white uppercase tracking-[0.3em] text-xs font-bold border border-white/50 px-6 py-3 hover:bg-white hover:text-black transition-colors duration-300">
+                Ver Pieza
+              </span>
             </div>
           </div>
 
-          <div className="flex justify-between items-start">
-            <h3 className="uppercase tracking-widest text-sm font-medium pr-4 group-hover:underline underline-offset-4 line-clamp-1">
+          <div className="flex justify-between items-start mt-4">
+            <h3 className="uppercase tracking-[0.1em] text-sm font-semibold pr-4 group-hover:underline underline-offset-4 line-clamp-2">
               {product.title}
             </h3>
-            <p className="text-sm font-bold opacity-80 whitespace-nowrap">
+            <p className="text-sm font-bold opacity-90 whitespace-nowrap tracking-widest">
               ${product.price}
             </p>
           </div>

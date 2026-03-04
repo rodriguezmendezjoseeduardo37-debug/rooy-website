@@ -5,11 +5,6 @@ import Stripe from "stripe";
 
 export const dynamic = 'force-dynamic';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  // Asegúrate de usar la versión que tienes configurada en tu dashboard
-
-});
-
 interface WebhookCartItem {
   title: string;
   quantity: number;
@@ -18,6 +13,14 @@ interface WebhookCartItem {
 }
 
 export async function POST(req: Request) {
+  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+    return new NextResponse("STRIPE_SECRET_KEY or STRIPE_WEBHOOK_SECRET not set", { status: 500 });
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    // Asegúrate de usar la versión que tienes configurada en tu dashboard
+  });
+
   const body = await req.text();
   const signature = (await headers()).get("Stripe-Signature") as string;
   let event: Stripe.Event;

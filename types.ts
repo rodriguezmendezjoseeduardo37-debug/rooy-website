@@ -1,3 +1,11 @@
+export interface SanityImage {
+  _type: "image";
+  asset: {
+    _ref: string;
+    _type: "reference";
+  };
+}
+
 export interface Product {
   _id: string;
   title: string;
@@ -7,8 +15,8 @@ export interface Product {
   slug: {
     current: string;
   };
-  image: any;
-  gallery?: any[];
+  image: SanityImage;
+  gallery?: SanityImage[];
 }
 
 export interface CartItem extends Product {
